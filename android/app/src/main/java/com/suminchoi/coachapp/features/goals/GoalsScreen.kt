@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -30,14 +27,6 @@ import com.suminchoi.coachapp.design.rcColors
 @Composable
 fun GoalsScreen(viewModel: GoalsViewModel = hiltViewModel()) {
     val form by viewModel.form.collectAsStateWithLifecycle()
-    val snackbarHost = remember { SnackbarHostState() }
-
-    LaunchedEffect(form.submitted) {
-        if (form.submitted) {
-            snackbarHost.showSnackbar("목표가 저장되었습니다.")
-            viewModel.dismissSuccess()
-        }
-    }
 
     RcScreen(title = stringResource(R.string.tab_goals)) {
         item {
@@ -50,33 +39,55 @@ fun GoalsScreen(viewModel: GoalsViewModel = hiltViewModel()) {
                     )
 
                     OutlinedTextField(
-                        value = form.targetDistanceKm,
+                        value = form.goalName,
+                        onValueChange = viewModel::updateGoalName,
+                        label = { Text(stringResource(R.string.goals_name_label)) },
+                        placeholder = { Text("서울 10K PB") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+
+                    OutlinedTextField(
+                        value = form.distance,
                         onValueChange = viewModel::updateDistance,
                         label = { Text(stringResource(R.string.goals_distance_label)) },
-                        placeholder = { Text("42.195") },
+                        placeholder = { Text("10K") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                     )
 
                     OutlinedTextField(
-                        value = form.targetDate,
+                        value = form.raceDate,
                         onValueChange = viewModel::updateDate,
                         label = { Text(stringResource(R.string.goals_date_label)) },
-                        placeholder = { Text("2025-10-01") },
+                        placeholder = { Text("2026-10-01") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                     )
 
                     OutlinedTextField(
-                        value = form.notes,
-                        onValueChange = viewModel::updateNotes,
-                        label = { Text(stringResource(R.string.goals_notes_label)) },
+                        value = form.goalTime,
+                        onValueChange = viewModel::updateGoalTime,
+                        label = { Text(stringResource(R.string.goals_time_label)) },
+                        placeholder = { Text("49:00") },
                         modifier = Modifier.fillMaxWidth(),
-                        minLines = 2,
+                        singleLine = true,
+                    )
+
+                    OutlinedTextField(
+                        value = form.targetPace,
+                        onValueChange = viewModel::updateTargetPace,
+                        label = { Text(stringResource(R.string.goals_pace_label)) },
+                        placeholder = { Text("4:54") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
                     )
 
                     if (form.error != null) {
                         Text(form.error!!, style = RcTypography.bodySmall, color = ZoneColors.interval)
+                    }
+                    if (form.submitted) {
+                        Text(stringResource(R.string.goals_saved), style = RcTypography.bodySmall, color = ZoneColors.base)
                     }
 
                     Spacer(modifier = Modifier.height(4.dp))

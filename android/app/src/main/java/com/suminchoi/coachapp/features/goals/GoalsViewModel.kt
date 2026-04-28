@@ -11,10 +11,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class GoalFormState(
-    val goalType: String = "race",
-    val targetDistanceKm: String = "",
-    val targetDate: String = "",
-    val notes: String = "",
+    val goalName: String = "",
+    val distance: String = "",
+    val raceDate: String = "",
+    val goalTime: String = "",
+    val targetPace: String = "",
     val isLoading: Boolean = false,
     val error: String? = null,
     val submitted: Boolean = false,
@@ -26,21 +27,28 @@ class GoalsViewModel @Inject constructor(private val api: ApiService) : ViewMode
     private val _form = MutableStateFlow(GoalFormState())
     val form = _form.asStateFlow()
 
-    fun updateGoalType(v: String) { _form.value = _form.value.copy(goalType = v) }
-    fun updateDistance(v: String) { _form.value = _form.value.copy(targetDistanceKm = v) }
-    fun updateDate(v: String) { _form.value = _form.value.copy(targetDate = v) }
-    fun updateNotes(v: String) { _form.value = _form.value.copy(notes = v) }
+    fun updateGoalName(v: String) { _form.value = _form.value.copy(goalName = v, error = null, submitted = false) }
+    fun updateDistance(v: String) { _form.value = _form.value.copy(distance = v, error = null, submitted = false) }
+    fun updateDate(v: String) { _form.value = _form.value.copy(raceDate = v, error = null, submitted = false) }
+    fun updateGoalTime(v: String) { _form.value = _form.value.copy(goalTime = v, error = null, submitted = false) }
+    fun updateTargetPace(v: String) { _form.value = _form.value.copy(targetPace = v, error = null, submitted = false) }
 
     fun submit() {
         val s = _form.value
+        if (s.goalName.isBlank()) {
+            _form.value = s.copy(error = "목표 이름을 입력해주세요.")
+            return
+        }
         viewModelScope.launch {
             _form.value = s.copy(isLoading = true, error = null)
             try {
                 api.submitGoal(
                     GoalRequest(
-                        goalName = s.notes.ifBlank { "${s.targetDistanceKm.ifBlank { "Race" }} 목표" },
-                        raceDate = s.targetDate.ifBlank { null },
-                        distance = s.targetDistanceKm.ifBlank { null },
+                        goalName = s.goalName.trim(),
+                        raceDate = s.raceDate.trim().ifBlank { null },
+                        distance = s.distance.trim().ifBlank { null },
+                        goalTime = s.goalTime.trim().ifBlank { null },
+                        targetPace = s.targetPace.trim().ifBlank { null },
                     )
                 )
                 _form.value = _form.value.copy(isLoading = false, submitted = true)
