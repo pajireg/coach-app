@@ -106,13 +106,16 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 item { RcSectionHeader(title = stringResource(R.string.settings_developer_section)) }
                 item {
                     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
-                        RcButton(
-                            text = if (s.isSyncing) stringResource(R.string.settings_syncing) else stringResource(R.string.settings_sync_cta),
-                            onClick = viewModel::sync,
-                            isLoading = s.isSyncing,
-                            style = RcButtonStyle.SECONDARY,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                            PreferenceRow(label = stringResource(R.string.settings_base_url), value = s.baseUrl)
+                            RcButton(
+                                text = if (s.isSyncing) stringResource(R.string.settings_syncing) else stringResource(R.string.settings_sync_cta),
+                                onClick = viewModel::sync,
+                                isLoading = s.isSyncing,
+                                style = RcButtonStyle.SECONDARY,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
                     }
                 }
 

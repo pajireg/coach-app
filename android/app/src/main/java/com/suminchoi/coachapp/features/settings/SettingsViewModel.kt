@@ -18,6 +18,7 @@ sealed interface SettingsUiState {
     data class Success(
         val user: User,
         val integrations: List<Integration>,
+        val baseUrl: String,
         val isSaving: Boolean = false,
         val isSyncing: Boolean = false,
         val isDirty: Boolean = false,
@@ -46,7 +47,7 @@ class SettingsViewModel @Inject constructor(
                 val user = api.getMe()
                 val integrations = api.getIntegrations().integrations
                 editedUser = user
-                _state.value = SettingsUiState.Success(user, integrations)
+                _state.value = SettingsUiState.Success(user, integrations, authStore.baseUrl)
             } catch (e: Exception) {
                 _state.value = SettingsUiState.Error(e.message ?: "알 수 없는 오류")
             }

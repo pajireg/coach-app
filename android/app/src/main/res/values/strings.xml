@@ -66,6 +66,7 @@
     <string name="settings_preferences_section">환경 설정</string>
     <string name="settings_integrations_section">연동</string>
     <string name="settings_developer_section">개발자</string>
+    <string name="settings_base_url">서버 주소</string>
     <string name="settings_timezone">시간대</string>
     <string name="settings_locale">언어</string>
     <string name="settings_run_mode">훈련 모드</string>
