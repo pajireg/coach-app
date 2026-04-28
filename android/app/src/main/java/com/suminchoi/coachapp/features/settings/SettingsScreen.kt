@@ -57,7 +57,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 item {
                     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(user.displayName.ifBlank { user.email }, style = RcTypography.titleMedium, color = rcColors.text)
+                            Text(user.displayName?.ifBlank { null } ?: user.email.ifBlank { user.externalKey }, style = RcTypography.titleMedium, color = rcColors.text)
                             if (user.garminEmail != null) {
                                 Text(user.garminEmail, style = RcTypography.bodySmall, color = rcColors.textDim)
                             }
@@ -172,12 +172,12 @@ private fun IntegrationRow(integration: Integration, modifier: Modifier = Modifi
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                integration.provider.replaceFirstChar { it.uppercase() },
+                integration.displayName.ifBlank { integration.provider.replaceFirstChar { it.uppercase() } },
                 style = RcTypography.bodyMedium,
                 color = rcColors.text,
             )
             val statusZone = when (integration.status) {
-                "connected" -> "base"
+                "active", "configured", "env_compat" -> "base"
                 "error" -> "interval"
                 else -> "rest"
             }

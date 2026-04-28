@@ -23,12 +23,12 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000\"")
+        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8624\"")
     }
 
     buildTypes {
         debug {
-            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000\"")
+            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8624\"")
         }
         release {
             buildConfigField("String", "API_BASE_URL", "\"${System.getenv("PROD_API_URL") ?: ""}\"")

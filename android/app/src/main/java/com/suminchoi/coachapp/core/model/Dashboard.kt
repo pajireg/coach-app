@@ -6,44 +6,45 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DashboardResponse(
     val schedule: Schedule = Schedule(),
-    @SerialName("current_plan") val currentPlan: List<PlannedWorkout> = emptyList(),
-    @SerialName("recent_activities") val recentActivities: List<Activity> = emptyList(),
+    @SerialName("currentPlan") val currentPlan: List<PlannedWorkout> = emptyList(),
+    @SerialName("recentActivities") val recentActivities: List<Activity> = emptyList(),
 )
 
 @Serializable
 data class Schedule(
-    @SerialName("week_start") val weekStart: String = "",
-    @SerialName("week_end") val weekEnd: String = "",
-    @SerialName("total_planned_km") val totalPlannedKm: Double = 0.0,
-    @SerialName("total_completed_km") val totalCompletedKm: Double = 0.0,
+    @SerialName("nextRunAt") val nextRunAt: String? = null,
+    @SerialName("lastRunAt") val lastRunAt: String? = null,
+    @SerialName("lastStatus") val lastStatus: String? = null,
+    @SerialName("lastError") val lastError: String? = null,
+    @SerialName("failureCount") val failureCount: Int = 0,
 )
 
 @Serializable
 data class PlannedWorkout(
-    val id: String = "",
     val date: String = "",
-    val name: String = "",
-    @SerialName("session_type") val sessionType: String = "base",
-    @SerialName("planned_minutes") val plannedMinutes: Int = 0,
-    @SerialName("planned_distance_km") val plannedDistanceKm: Double? = null,
-    @SerialName("target_pace_per_km") val targetPacePerKm: Int? = null,
-    @SerialName("is_rest") val isRest: Boolean = false,
-    val notes: String? = null,
+    @SerialName("workoutName") val name: String = "",
+    @SerialName("sessionType") val sessionType: String? = null,
+    @SerialName("workoutType") val workoutType: String? = null,
+    @SerialName("plannedMinutes") val plannedMinutes: Int? = null,
+    @SerialName("isRest") val isRest: Boolean = false,
 )
 
 @Serializable
 data class Activity(
-    val id: String = "",
-    @SerialName("garmin_activity_id") val garminActivityId: String? = null,
-    val name: String = "",
-    @SerialName("start_time") val startTime: String = "",
-    @SerialName("duration_seconds") val durationSeconds: Int = 0,
-    @SerialName("distance_km") val distanceKm: Double = 0.0,
-    @SerialName("average_pace_per_km") val averagePacePerKm: Int? = null,
-    @SerialName("average_hr") val averageHr: Int? = null,
-    @SerialName("execution_quality") val executionQuality: Int? = null,
-    @SerialName("target_match_score") val targetMatchScore: Int? = null,
-    @SerialName("session_type") val sessionType: String = "base",
+    val provider: String? = null,
+    @SerialName("providerActivityId") val providerActivityId: String? = null,
+    @SerialName("activityDate") val activityDate: String = "",
+    @SerialName("startedAt") val startedAt: String? = null,
+    val title: String = "",
+    @SerialName("sportType") val sportType: String? = null,
+    @SerialName("distanceKm") val distanceKm: Double? = null,
+    @SerialName("durationSeconds") val durationSeconds: Int? = null,
+    @SerialName("avgPace") val avgPace: String? = null,
+    @SerialName("avgPaceSeconds") val avgPaceSeconds: Int? = null,
+    @SerialName("avgHr") val averageHr: Int? = null,
+    @SerialName("executionQuality") val executionQuality: String? = null,
+    @SerialName("targetMatchScore") val targetMatchScore: Double? = null,
+    @SerialName("sessionType") val sessionType: String? = null,
 )
 
 enum class Zone {

@@ -7,58 +7,64 @@ import kotlinx.serialization.Serializable
 data class UpdatePreferencesRequest(
     val timezone: String? = null,
     val locale: String? = null,
-    @SerialName("schedule_times") val scheduleTimes: List<String>? = null,
-    @SerialName("run_mode") val runMode: String? = null,
-    @SerialName("include_strength") val includeStrength: Boolean? = null,
+    @SerialName("scheduleTimes") val scheduleTimes: String? = null,
+    @SerialName("runMode") val runMode: String? = null,
+    @SerialName("includeStrength") val includeStrength: Boolean? = null,
 )
 
 @Serializable
 data class FeedbackRequest(
-    @SerialName("feedback_date") val feedbackDate: String,
-    val fatigue: Int? = null,
-    val soreness: Int? = null,
-    val stress: Int? = null,
-    val motivation: Int? = null,
-    val sleep: Int? = null,
-    @SerialName("pain_notes") val painNotes: String? = null,
+    @SerialName("feedbackDate") val feedbackDate: String,
+    @SerialName("fatigueScore") val fatigue: Int? = null,
+    @SerialName("sorenessScore") val soreness: Int? = null,
+    @SerialName("stressScore") val stress: Int? = null,
+    @SerialName("motivationScore") val motivation: Int? = null,
+    @SerialName("sleepQualityScore") val sleep: Int? = null,
+    @SerialName("painNotes") val painNotes: String? = null,
     val notes: String? = null,
 )
 
 @Serializable
 data class GoalRequest(
-    @SerialName("goal_type") val goalType: String,
-    @SerialName("target_distance_km") val targetDistanceKm: Double? = null,
-    @SerialName("target_time_seconds") val targetTimeSeconds: Int? = null,
-    @SerialName("target_date") val targetDate: String? = null,
-    val notes: String? = null,
+    @SerialName("goalName") val goalName: String,
+    @SerialName("raceDate") val raceDate: String? = null,
+    val distance: String? = null,
+    @SerialName("goalTime") val goalTime: String? = null,
+    @SerialName("targetPace") val targetPace: String? = null,
+    val priority: Int = 1,
+    @SerialName("isActive") val isActive: Boolean = true,
 )
 
 @Serializable
 data class AvailabilityRequest(
-    @SerialName("available_days") val availableDays: List<String>,
-    @SerialName("long_run_day") val longRunDay: String? = null,
+    val weekday: Int,
+    @SerialName("isAvailable") val isAvailable: Boolean = true,
+    @SerialName("maxDurationMinutes") val maxDurationMinutes: Int? = null,
+    @SerialName("preferredSessionType") val preferredSessionType: String? = null,
 )
 
 @Serializable
 data class InjuryRequest(
-    @SerialName("injury_type") val injuryType: String,
-    val severity: String,
+    @SerialName("statusDate") val statusDate: String,
+    @SerialName("injuryArea") val injuryArea: String,
+    val severity: Int,
     val notes: String? = null,
+    @SerialName("isActive") val isActive: Boolean = true,
 )
 
 @Serializable
 data class SyncRequest(
-    val days: Int = 7,
+    val mode: String = "auto",
 )
 
 @Serializable
 data class CreateUserRequest(
-    val email: String,
-    @SerialName("display_name") val displayName: String,
+    @SerialName("externalKey") val email: String,
+    @SerialName("displayName") val displayName: String,
 )
 
 @Serializable
 data class CreateUserResponse(
-    val id: String,
-    @SerialName("api_key") val apiKey: String,
+    val user: User,
+    @SerialName("apiKey") val apiKey: String,
 )

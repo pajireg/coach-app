@@ -81,9 +81,9 @@ private fun MainScreen(onSignOut: () -> Unit) {
         when (selectedTab) {
             0 -> HomeScreen(
                 onOpenFeedback = { showFeedback = true },
-                onOpenWorkout = { selectedWorkout = PlannedWorkout(id = it) },
+                onOpenWorkout = { selectedWorkout = it },
             )
-            1 -> WeeklyScreen(onOpenWorkout = { selectedWorkout = PlannedWorkout(id = it) })
+            1 -> WeeklyScreen(onOpenWorkout = { selectedWorkout = it })
             2 -> TrendsScreen()
             3 -> GoalsScreen()
             4 -> SettingsScreen()

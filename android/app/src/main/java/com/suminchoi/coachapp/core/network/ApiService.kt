@@ -9,10 +9,12 @@ import com.suminchoi.coachapp.core.model.GoalRequest
 import com.suminchoi.coachapp.core.model.InjuryRequest
 import com.suminchoi.coachapp.core.model.IntegrationsResponse
 import com.suminchoi.coachapp.core.model.SyncRequest
+import com.suminchoi.coachapp.core.model.TrendsResponse
 import com.suminchoi.coachapp.core.model.UpdatePreferencesRequest
 import com.suminchoi.coachapp.core.model.User
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 
@@ -20,8 +22,17 @@ interface ApiService {
     @GET("v1/me")
     suspend fun getMe(): User
 
+    @GET("v1/me")
+    suspend fun getMe(
+        @Header("Authorization") authorization: String,
+        @Header("X-Coach-Base-Url") baseUrl: String,
+    ): User
+
     @GET("v1/me/dashboard")
     suspend fun getDashboard(): DashboardResponse
+
+    @GET("v1/me/trends")
+    suspend fun getTrends(): TrendsResponse
 
     @GET("v1/me/integrations")
     suspend fun getIntegrations(): IntegrationsResponse

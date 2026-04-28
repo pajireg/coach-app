@@ -10,9 +10,12 @@ data class IntegrationsResponse(
 
 @Serializable
 data class Integration(
-    val id: String = "",
     val provider: String = "",
+    @SerialName("displayName") val displayName: String = "",
     val status: String = "not_connected",
-    @SerialName("last_sync") val lastSync: String? = null,
-    @SerialName("account_email") val accountEmail: String? = null,
+    val connected: Boolean = false,
+    val source: String = "none",
+    val capabilities: List<String> = emptyList(),
+    @SerialName("externalAccountId") val externalAccountId: String? = null,
+    @SerialName("lastError") val lastError: String? = null,
 )

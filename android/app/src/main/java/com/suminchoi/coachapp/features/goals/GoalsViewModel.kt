@@ -38,10 +38,9 @@ class GoalsViewModel @Inject constructor(private val api: ApiService) : ViewMode
             try {
                 api.submitGoal(
                     GoalRequest(
-                        goalType = s.goalType,
-                        targetDistanceKm = s.targetDistanceKm.toDoubleOrNull(),
-                        targetDate = s.targetDate.ifBlank { null },
-                        notes = s.notes.ifBlank { null },
+                        goalName = s.notes.ifBlank { "${s.targetDistanceKm.ifBlank { "Race" }} 목표" },
+                        raceDate = s.targetDate.ifBlank { null },
+                        distance = s.targetDistanceKm.ifBlank { null },
                     )
                 )
                 _form.value = _form.value.copy(isLoading = false, submitted = true)

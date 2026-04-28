@@ -9,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import javax.inject.Singleton
@@ -32,8 +33,24 @@ object NetworkModule {
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val key = authStore.apiKey
-                val builder = chain.request().newBuilder()
-                if (key != null) builder.addHeader("Authorization", "Bearer $key")
+                val originalRequest = chain.request()
+                val overrideBaseUrl = originalRequest.header("X-Coach-Base-Url")
+                val targetBaseUrl = (overrideBaseUrl ?: authStore.baseUrl).trimEnd('/').toHttpUrlOrNull()
+                val rewrittenUrl = if (targetBaseUrl != null) {
+                    originalRequest.url.newBuilder()
+                        .scheme(targetBaseUrl.scheme)
+                        .host(targetBaseUrl.host)
+                        .port(targetBaseUrl.port)
+                        .build()
+                } else {
+                    originalRequest.url
+                }
+                val builder = originalRequest.newBuilder()
+                    .url(rewrittenUrl)
+                    .removeHeader("X-Coach-Base-Url")
+                if (key != null && originalRequest.header("Authorization") == null) {
+                    builder.addHeader("Authorization", "Bearer $key")
+                }
                 val response = chain.proceed(builder.build())
                 if (response.code == 401) authStore.signOut()
                 response
@@ -42,7 +59,7 @@ object NetworkModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl(authStore.baseUrl.trimEnd('/') + "/")
+            .baseUrl("http://localhost/")
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()

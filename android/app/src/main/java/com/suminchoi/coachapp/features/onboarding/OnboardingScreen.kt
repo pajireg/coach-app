@@ -91,11 +91,20 @@ fun OnboardingScreen(
                 value = state.baseUrl,
                 onValueChange = viewModel::updateBaseUrl,
                 label = { Text(stringResource(R.string.onboarding_base_url_label)) },
-                placeholder = { Text("http://10.0.2.2:8000") },
+                placeholder = { Text("http://10.0.2.2:8624") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
+
+            if (state.status != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = state.status!!,
+                    style = RcTypography.bodySmall,
+                    color = rcColors.textDim,
+                )
+            }
 
             if (state.error != null) {
                 Spacer(modifier = Modifier.height(8.dp))

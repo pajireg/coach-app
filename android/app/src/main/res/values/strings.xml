@@ -27,6 +27,7 @@
     <string name="workout_planned_min">계획 시간</string>
     <string name="workout_target_pace">목표 페이스</string>
     <string name="workout_distance">거리</string>
+    <string name="workout_type">유형</string>
     <string name="workout_rest">휴식</string>
     <string name="workout_actual_header">실제 결과</string>
     <string name="workout_quality">실행 품질</string>
@@ -41,7 +42,14 @@
     <string name="weekly_empty">이번 주 훈련 계획이 없습니다.</string>
 
     <!-- Trends -->
-    <string name="trends_coming_soon">준비 중</string>
+    <string name="trends_eyebrow">훈련 흐름</string>
+    <string name="trends_acwr">부하 비율</string>
+    <string name="trends_as_of">기준일</string>
+    <string name="trends_weekly_volume">주간 거리</string>
+    <string name="trends_pace">페이스 추이</string>
+    <string name="trends_latest_week">최근 주간 거리</string>
+    <string name="trends_empty_weekly">주간 데이터가 없습니다.</string>
+    <string name="trends_empty_pace">페이스 데이터가 없습니다.</string>
 
     <!-- Goals -->
     <string name="goals_race_goal_title">레이스 목표</string>

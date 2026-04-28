@@ -10,7 +10,7 @@ import javax.inject.Singleton
 private const val PREFS_NAME = "coach_secure_prefs"
 private const val KEY_API_KEY = "coach.apiKey"
 private const val KEY_BASE_URL = "coach.baseUrl"
-private const val DEFAULT_BASE_URL = "http://10.0.2.2:8000"
+private const val DEFAULT_BASE_URL = "http://10.0.2.2:8624"
 
 @Singleton
 class SecureStorage @Inject constructor(@ApplicationContext context: Context) {

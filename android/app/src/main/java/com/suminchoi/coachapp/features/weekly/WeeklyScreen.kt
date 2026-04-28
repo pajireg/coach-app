@@ -42,7 +42,7 @@ import com.suminchoi.coachapp.design.rcColors
 
 @Composable
 fun WeeklyScreen(
-    onOpenWorkout: (String) -> Unit,
+    onOpenWorkout: (PlannedWorkout) -> Unit,
     viewModel: WeeklyViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -65,12 +65,12 @@ fun WeeklyScreen(
                 val workouts = s.dashboard.currentPlan
                 val grouped = workouts.groupBy { it.date }
 
-                item {
-                    WeekStrip(
-                        workouts = workouts,
-                        onTap = { onOpenWorkout(it.id) },
-                    )
-                }
+                    item {
+                        WeekStrip(
+                            workouts = workouts,
+                            onTap = { onOpenWorkout(it) },
+                        )
+                    }
 
                 grouped.forEach { (date, dayWorkouts) ->
                     item {
@@ -89,17 +89,17 @@ fun WeeklyScreen(
                             RcCard(
                                 modifier = Modifier
                                     .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
-                                    .clickable { onOpenWorkout(workout.id) },
+                                    .clickable { onOpenWorkout(workout) },
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
                                 ) {
-                                    RcZoneDot(sessionType = workout.sessionType)
+                                    RcZoneDot(sessionType = workout.sessionType ?: "rest")
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(workout.name, style = RcTypography.bodyMedium, color = rcColors.text)
                                         Text(
-                                            "${workout.plannedMinutes}분",
+                                            workout.plannedMinutes?.let { "${it}분" } ?: "-",
                                             style = RcTypography.bodySmall,
                                             color = rcColors.textDim,
                                         )
@@ -137,7 +137,7 @@ private fun WeekStrip(workouts: List<PlannedWorkout>, onTap: (PlannedWorkout) ->
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         workouts.take(7).forEachIndexed { index, workout ->
-            val color = zoneColor(workout.sessionType.toZone())
+            val color = zoneColor((workout.sessionType ?: "rest").toZone())
             Column(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
@@ -159,7 +159,7 @@ private fun WeekStrip(workouts: List<PlannedWorkout>, onTap: (PlannedWorkout) ->
                     Box(
                         modifier = Modifier.size(6.dp).clip(CircleShape).background(color),
                     )
-                    Text("${workout.plannedMinutes}'", style = RcTypography.bodySmall, color = color)
+                    Text(workout.plannedMinutes?.let { "${it}'" } ?: "-", style = RcTypography.bodySmall, color = color)
                 } else {
                     Text(stringResource(R.string.workout_rest), style = RcTypography.bodySmall, color = rcColors.textMuted)
                 }

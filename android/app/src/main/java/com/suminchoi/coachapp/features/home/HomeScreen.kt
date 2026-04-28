@@ -49,7 +49,7 @@ import com.suminchoi.coachapp.design.rcColors
 @Composable
 fun HomeScreen(
     onOpenFeedback: () -> Unit,
-    onOpenWorkout: (String) -> Unit,
+    onOpenWorkout: (PlannedWorkout) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -83,7 +83,7 @@ fun HomeScreen(
 
                         item {
                             if (today != null) {
-                                HeroCard(workout = today, onClick = { onOpenWorkout(today.id) })
+                                HeroCard(workout = today, onClick = { onOpenWorkout(today) })
                             }
                         }
 
@@ -103,7 +103,7 @@ fun HomeScreen(
                             items(dashboard.currentPlan.drop(1).take(3)) { workout ->
                                 WorkoutRow(
                                     workout = workout,
-                                    onClick = { onOpenWorkout(workout.id) },
+                                    onClick = { onOpenWorkout(workout) },
                                 )
                             }
                         }
@@ -127,26 +127,23 @@ fun HomeScreen(
 
 @Composable
 private fun HeroCard(workout: PlannedWorkout, onClick: () -> Unit) {
-    val zoneColor = zoneColor(workout.sessionType.toZone())
+    val sessionType = workout.sessionType ?: "rest"
     RcCard(
         modifier = Modifier
             .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
             .fillMaxWidth(),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            RcZoneBadge(sessionType = workout.sessionType)
+            RcZoneBadge(sessionType = sessionType)
             Text(workout.name, style = RcTypography.titleLarge, color = rcColors.text)
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                MetricChip(label = stringResource(R.string.workout_planned_min), value = "${workout.plannedMinutes}분")
-                if (workout.targetPacePerKm != null) {
-                    MetricChip(label = stringResource(R.string.workout_target_pace), value = formatPace(workout.targetPacePerKm))
+                MetricChip(
+                    label = stringResource(R.string.workout_planned_min),
+                    value = workout.plannedMinutes?.let { "${it}분" } ?: "-",
+                )
+                if (workout.workoutType != null) {
+                    MetricChip(label = stringResource(R.string.workout_type), value = workout.workoutType)
                 }
-                if (workout.plannedDistanceKm != null) {
-                    MetricChip(label = stringResource(R.string.workout_distance), value = "%.1fkm".format(workout.plannedDistanceKm))
-                }
-            }
-            if (workout.notes != null) {
-                Text(workout.notes, style = RcTypography.bodySmall, color = rcColors.textDim)
             }
         }
     }
@@ -157,14 +154,18 @@ private fun ActivityCard(activity: Activity) {
     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                RcZoneDot(sessionType = activity.sessionType)
+                RcZoneDot(sessionType = activity.sessionType ?: "base")
                 Spacer(modifier = Modifier.width(Spacing.sm))
-                Text(activity.name, style = RcTypography.titleMedium, color = rcColors.text)
+                Text(activity.title, style = RcTypography.titleMedium, color = rcColors.text)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                MetricChip(label = stringResource(R.string.activity_distance), value = "%.1fkm".format(activity.distanceKm))
-                if (activity.averagePacePerKm != null) {
-                    MetricChip(label = stringResource(R.string.activity_pace), value = formatPace(activity.averagePacePerKm))
+                if (activity.distanceKm != null) {
+                    MetricChip(label = stringResource(R.string.activity_distance), value = "%.1fkm".format(activity.distanceKm))
+                }
+                if (activity.avgPaceSeconds != null) {
+                    MetricChip(label = stringResource(R.string.activity_pace), value = formatPace(activity.avgPaceSeconds))
+                } else if (activity.avgPace != null) {
+                    MetricChip(label = stringResource(R.string.activity_pace), value = activity.avgPace)
                 }
                 if (activity.averageHr != null) {
                     MetricChip(label = stringResource(R.string.activity_hr), value = "${activity.averageHr}bpm")
@@ -183,12 +184,12 @@ private fun WorkoutRow(workout: PlannedWorkout, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        RcZoneDot(sessionType = workout.sessionType)
+        RcZoneDot(sessionType = workout.sessionType ?: "rest")
         Column(modifier = Modifier.weight(1f)) {
             Text(workout.name, style = RcTypography.bodyMedium, color = rcColors.text)
             Text(workout.date, style = RcTypography.bodySmall, color = rcColors.textMuted)
         }
-        Text("${workout.plannedMinutes}분", style = RcTypography.monoBody, color = rcColors.textDim)
+        Text(workout.plannedMinutes?.let { "${it}분" } ?: "-", style = RcTypography.monoBody, color = rcColors.textDim)
     }
 }
 

@@ -48,26 +48,19 @@ fun WorkoutSheet(
                 .padding(bottom = 48.dp),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            RcZoneBadge(sessionType = workout.sessionType)
+            RcZoneBadge(sessionType = workout.sessionType ?: "rest")
 
             Text(workout.name, style = RcTypography.titleLarge, color = rcColors.text)
 
-            if (workout.notes != null) {
-                Text(workout.notes, style = RcTypography.bodyMedium, color = rcColors.textDim)
-            }
-
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
-                MetricColumn(label = stringResource(R.string.workout_planned_min), value = "${workout.plannedMinutes}분")
-                if (workout.targetPacePerKm != null) {
+                MetricColumn(
+                    label = stringResource(R.string.workout_planned_min),
+                    value = workout.plannedMinutes?.let { "${it}분" } ?: "-",
+                )
+                if (workout.workoutType != null) {
                     MetricColumn(
-                        label = stringResource(R.string.workout_target_pace),
-                        value = formatPace(workout.targetPacePerKm),
-                    )
-                }
-                if (workout.plannedDistanceKm != null) {
-                    MetricColumn(
-                        label = stringResource(R.string.workout_distance),
-                        value = "%.1fkm".format(workout.plannedDistanceKm),
+                        label = stringResource(R.string.workout_type),
+                        value = workout.workoutType,
                     )
                 }
             }
@@ -80,16 +73,20 @@ fun WorkoutSheet(
                     color = rcColors.textMuted,
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
-                    MetricColumn(label = stringResource(R.string.activity_distance), value = "%.1fkm".format(activity.distanceKm))
-                    if (activity.averagePacePerKm != null) {
-                        MetricColumn(label = stringResource(R.string.activity_pace), value = formatPace(activity.averagePacePerKm))
+                    if (activity.distanceKm != null) {
+                        MetricColumn(label = stringResource(R.string.activity_distance), value = "%.1fkm".format(activity.distanceKm))
+                    }
+                    if (activity.avgPaceSeconds != null) {
+                        MetricColumn(label = stringResource(R.string.activity_pace), value = formatPace(activity.avgPaceSeconds))
+                    } else if (activity.avgPace != null) {
+                        MetricColumn(label = stringResource(R.string.activity_pace), value = activity.avgPace)
                     }
                     if (activity.averageHr != null) {
                         MetricColumn(label = stringResource(R.string.activity_hr), value = "${activity.averageHr}bpm")
                     }
                 }
                 if (activity.executionQuality != null) {
-                    MetricColumn(label = stringResource(R.string.workout_quality), value = "${activity.executionQuality}/10")
+                    MetricColumn(label = stringResource(R.string.workout_quality), value = activity.executionQuality)
                 }
             }
 

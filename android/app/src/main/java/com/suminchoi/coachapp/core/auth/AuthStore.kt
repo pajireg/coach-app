@@ -18,7 +18,7 @@ class AuthStore @Inject constructor(private val storage: SecureStorage) {
     val state: StateFlow<AuthState> = _state.asStateFlow()
 
     val apiKey: String? get() = (_state.value as? AuthState.SignedIn)?.apiKey
-    val baseUrl: String get() = (_state.value as? AuthState.SignedIn)?.baseUrl ?: "http://10.0.2.2:8000"
+    val baseUrl: String get() = (_state.value as? AuthState.SignedIn)?.baseUrl ?: "http://10.0.2.2:8624"
 
     fun save(apiKey: String, baseUrl: String) {
         storage.save(apiKey, baseUrl)
