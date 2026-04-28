@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">러닝코치</string>
+
+    <!-- Tabs -->
+    <string name="tab_home">오늘</string>
+    <string name="tab_weekly">주간</string>
+    <string name="tab_trends">추이</string>
+    <string name="tab_goals">목표</string>
+    <string name="tab_settings">설정</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_eyebrow">러닝 코치</string>
+    <string name="onboarding_title">함께 달려봐요</string>
+    <string name="onboarding_subtitle">API 키를 입력하면 바로 시작할 수 있어요.</string>
+    <string name="onboarding_api_key_label">API 키</string>
+    <string name="onboarding_base_url_label">서버 주소 (선택)</string>
+    <string name="onboarding_cta">시작하기</string>
+
+    <!-- Home -->
+    <string name="home_eyebrow">오늘의 훈련</string>
+    <string name="home_recent_activity">최근 활동</string>
+    <string name="home_plan_preview">이번 주 계획</string>
+    <string name="home_feedback_fab">피드백 입력</string>
+
+    <!-- Workout -->
+    <string name="workout_planned_min">계획 시간</string>
+    <string name="workout_target_pace">목표 페이스</string>
+    <string name="workout_distance">거리</string>
+    <string name="workout_rest">휴식</string>
+    <string name="workout_actual_header">실제 결과</string>
+    <string name="workout_quality">실행 품질</string>
+    <string name="workout_garmin_cta">가민에서 실행</string>
+
+    <!-- Activity -->
+    <string name="activity_distance">거리</string>
+    <string name="activity_pace">평균 페이스</string>
+    <string name="activity_hr">평균 심박</string>
+
+    <!-- Weekly -->
+    <string name="weekly_empty">이번 주 훈련 계획이 없습니다.</string>
+
+    <!-- Trends -->
+    <string name="trends_coming_soon">준비 중</string>
+
+    <!-- Goals -->
+    <string name="goals_race_goal_title">레이스 목표</string>
+    <string name="goals_distance_label">목표 거리 (km)</string>
+    <string name="goals_date_label">목표 날짜</string>
+    <string name="goals_notes_label">메모</string>
+    <string name="goals_save_cta">목표 저장</string>
+
+    <!-- Settings -->
+    <string name="settings_profile_section">프로필</string>
+    <string name="settings_preferences_section">환경 설정</string>
+    <string name="settings_integrations_section">연동</string>
+    <string name="settings_developer_section">개발자</string>
+    <string name="settings_timezone">시간대</string>
+    <string name="settings_locale">언어</string>
+    <string name="settings_run_mode">훈련 모드</string>
+    <string name="settings_include_strength">근력 훈련 포함</string>
+    <string name="settings_no_integrations">연동된 앱이 없습니다.</string>
+    <string name="settings_sync_cta">가민 동기화</string>
+    <string name="settings_syncing">동기화 중…</string>
+    <string name="settings_save_cta">저장</string>
+    <string name="settings_sign_out">로그아웃</string>
+
+    <!-- Feedback -->
+    <string name="feedback_title">오늘 컨디션</string>
+    <string name="feedback_fatigue">피로도</string>
+    <string name="feedback_soreness">근육통</string>
+    <string name="feedback_stress">스트레스</string>
+    <string name="feedback_motivation">동기부여</string>
+    <string name="feedback_sleep">수면 품질</string>
+    <string name="feedback_pain_notes">통증 메모</string>
+    <string name="feedback_notes">기타 메모</string>
+    <string name="feedback_submit_cta">제출</string>
+</resources>
