@@ -64,6 +64,8 @@
     <!-- Settings -->
     <string name="settings_profile_section">프로필</string>
     <string name="settings_preferences_section">환경 설정</string>
+    <string name="settings_availability_section">훈련 가능 시간</string>
+    <string name="settings_injury_section">부상 상태</string>
     <string name="settings_integrations_section">연동</string>
     <string name="settings_developer_section">개발자</string>
     <string name="settings_base_url">서버 주소</string>
@@ -71,6 +73,14 @@
     <string name="settings_locale">언어</string>
     <string name="settings_run_mode">훈련 모드</string>
     <string name="settings_include_strength">근력 훈련 포함</string>
+    <string name="settings_weekday">요일</string>
+    <string name="settings_max_minutes">가능 시간(분)</string>
+    <string name="settings_session_type">선호 훈련 유형</string>
+    <string name="settings_save_availability">가용 시간 저장</string>
+    <string name="settings_injury_area">부상 부위</string>
+    <string name="settings_injury_severity">통증 정도(1-10)</string>
+    <string name="settings_injury_notes">부상 메모</string>
+    <string name="settings_save_injury">부상 상태 저장</string>
     <string name="settings_no_integrations">연동된 앱이 없습니다.</string>
     <string name="settings_sync_cta">가민 동기화</string>
     <string name="settings_syncing">동기화 중…</string>

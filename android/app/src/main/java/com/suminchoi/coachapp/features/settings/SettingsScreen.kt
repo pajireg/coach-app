@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -84,6 +87,85 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     }
                 }
 
+                item { RcSectionHeader(title = stringResource(R.string.settings_availability_section)) }
+                item {
+                    RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                            Text(stringResource(R.string.settings_weekday), style = RcTypography.bodyMedium, color = rcColors.text)
+                            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                                listOf("월", "화", "수", "목", "금", "토", "일").forEachIndexed { index, label ->
+                                    RcButton(
+                                        text = label,
+                                        onClick = { viewModel.updateAvailabilityWeekday(index) },
+                                        style = if (s.availabilityWeekday == index) RcButtonStyle.PRIMARY else RcButtonStyle.SECONDARY,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                }
+                            }
+                            OutlinedTextField(
+                                value = s.availabilityMaxMinutes,
+                                onValueChange = viewModel::updateAvailabilityMaxMinutes,
+                                label = { Text(stringResource(R.string.settings_max_minutes)) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                            )
+                            OutlinedTextField(
+                                value = s.availabilitySessionType,
+                                onValueChange = viewModel::updateAvailabilitySessionType,
+                                label = { Text(stringResource(R.string.settings_session_type)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                            )
+                            RcButton(
+                                text = stringResource(R.string.settings_save_availability),
+                                onClick = viewModel::saveAvailability,
+                                isLoading = s.isAvailabilitySaving,
+                                style = RcButtonStyle.SECONDARY,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
+                }
+
+                item { RcSectionHeader(title = stringResource(R.string.settings_injury_section)) }
+                item {
+                    RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                            OutlinedTextField(
+                                value = s.injuryArea,
+                                onValueChange = viewModel::updateInjuryArea,
+                                label = { Text(stringResource(R.string.settings_injury_area)) },
+                                placeholder = { Text("왼쪽 무릎") },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                            )
+                            OutlinedTextField(
+                                value = s.injurySeverity,
+                                onValueChange = viewModel::updateInjurySeverity,
+                                label = { Text(stringResource(R.string.settings_injury_severity)) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                            )
+                            OutlinedTextField(
+                                value = s.injuryNotes,
+                                onValueChange = viewModel::updateInjuryNotes,
+                                label = { Text(stringResource(R.string.settings_injury_notes)) },
+                                modifier = Modifier.fillMaxWidth(),
+                                minLines = 2,
+                            )
+                            RcButton(
+                                text = stringResource(R.string.settings_save_injury),
+                                onClick = viewModel::saveInjury,
+                                isLoading = s.isInjurySaving,
+                                style = RcButtonStyle.SECONDARY,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
+                }
+
                 item { RcSectionHeader(title = stringResource(R.string.settings_integrations_section)) }
                 if (s.integrations.isEmpty()) {
                     item {
@@ -126,6 +208,17 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                             onClick = viewModel::save,
                             isLoading = s.isSaving,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                        )
+                    }
+                }
+
+                if (s.message != null) {
+                    item {
+                        Text(
+                            s.message,
+                            style = RcTypography.bodySmall,
+                            color = ZoneColors.base,
+                            modifier = Modifier.padding(horizontal = Spacing.screenHorizontal),
                         )
                     }
                 }

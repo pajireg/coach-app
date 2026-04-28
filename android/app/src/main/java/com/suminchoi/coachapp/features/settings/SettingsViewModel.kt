@@ -3,6 +3,8 @@ package com.suminchoi.coachapp.features.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suminchoi.coachapp.core.auth.AuthStore
+import com.suminchoi.coachapp.core.model.AvailabilityRequest
+import com.suminchoi.coachapp.core.model.InjuryRequest
 import com.suminchoi.coachapp.core.model.Integration
 import com.suminchoi.coachapp.core.model.UpdatePreferencesRequest
 import com.suminchoi.coachapp.core.model.User
@@ -11,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 sealed interface SettingsUiState {
@@ -21,7 +24,16 @@ sealed interface SettingsUiState {
         val baseUrl: String,
         val isSaving: Boolean = false,
         val isSyncing: Boolean = false,
+        val isAvailabilitySaving: Boolean = false,
+        val isInjurySaving: Boolean = false,
         val isDirty: Boolean = false,
+        val availabilityWeekday: Int = 5,
+        val availabilityMaxMinutes: String = "90",
+        val availabilitySessionType: String = "long_run",
+        val injuryArea: String = "",
+        val injurySeverity: String = "3",
+        val injuryNotes: String = "",
+        val message: String? = null,
         val error: String? = null,
     ) : SettingsUiState
     data class Error(val message: String) : SettingsUiState
@@ -58,12 +70,23 @@ class SettingsViewModel @Inject constructor(
     fun updateLocale(v: String) = mutate { copy(preferences = preferences.copy(locale = v)) }
     fun updateRunMode(v: String) = mutate { copy(preferences = preferences.copy(runMode = v)) }
     fun updateIncludeStrength(v: Boolean) = mutate { copy(preferences = preferences.copy(includeStrength = v)) }
+    fun updateAvailabilityWeekday(v: Int) = updateSuccess { copy(availabilityWeekday = v, message = null, error = null) }
+    fun updateAvailabilityMaxMinutes(v: String) = updateSuccess { copy(availabilityMaxMinutes = v, message = null, error = null) }
+    fun updateAvailabilitySessionType(v: String) = updateSuccess { copy(availabilitySessionType = v, message = null, error = null) }
+    fun updateInjuryArea(v: String) = updateSuccess { copy(injuryArea = v, message = null, error = null) }
+    fun updateInjurySeverity(v: String) = updateSuccess { copy(injurySeverity = v, message = null, error = null) }
+    fun updateInjuryNotes(v: String) = updateSuccess { copy(injuryNotes = v, message = null, error = null) }
 
     private fun mutate(block: User.() -> User) {
         val current = editedUser ?: return
         editedUser = current.block()
         val s = _state.value as? SettingsUiState.Success ?: return
         _state.value = s.copy(user = editedUser!!, isDirty = true)
+    }
+
+    private fun updateSuccess(block: SettingsUiState.Success.() -> SettingsUiState.Success) {
+        val s = _state.value as? SettingsUiState.Success ?: return
+        _state.value = s.block()
     }
 
     fun save() {
@@ -97,6 +120,49 @@ class SettingsViewModel @Inject constructor(
                 _state.value = s.copy(isSyncing = false)
             } catch (e: Exception) {
                 _state.value = s.copy(isSyncing = false, error = e.message)
+            }
+        }
+    }
+
+    fun saveAvailability() {
+        val s = _state.value as? SettingsUiState.Success ?: return
+        viewModelScope.launch {
+            _state.value = s.copy(isAvailabilitySaving = true, message = null, error = null)
+            try {
+                api.submitAvailability(
+                    AvailabilityRequest(
+                        weekday = s.availabilityWeekday,
+                        maxDurationMinutes = s.availabilityMaxMinutes.toIntOrNull(),
+                        preferredSessionType = s.availabilitySessionType.trim().ifBlank { null },
+                    )
+                )
+                _state.value = s.copy(isAvailabilitySaving = false, message = "가용 시간이 저장되었습니다.")
+            } catch (e: Exception) {
+                _state.value = s.copy(isAvailabilitySaving = false, error = e.message ?: "가용 시간 저장에 실패했습니다.")
+            }
+        }
+    }
+
+    fun saveInjury() {
+        val s = _state.value as? SettingsUiState.Success ?: return
+        if (s.injuryArea.isBlank()) {
+            _state.value = s.copy(error = "부상 부위를 입력해주세요.", message = null)
+            return
+        }
+        viewModelScope.launch {
+            _state.value = s.copy(isInjurySaving = true, message = null, error = null)
+            try {
+                api.submitInjury(
+                    InjuryRequest(
+                        statusDate = LocalDate.now().toString(),
+                        injuryArea = s.injuryArea.trim(),
+                        severity = s.injurySeverity.toIntOrNull()?.coerceIn(1, 10) ?: 3,
+                        notes = s.injuryNotes.trim().ifBlank { null },
+                    )
+                )
+                _state.value = s.copy(isInjurySaving = false, message = "부상 상태가 저장되었습니다.")
+            } catch (e: Exception) {
+                _state.value = s.copy(isInjurySaving = false, error = e.message ?: "부상 상태 저장에 실패했습니다.")
             }
         }
     }
