@@ -58,6 +58,12 @@ data class SyncRequest(
 )
 
 @Serializable
+data class GarminCredentialRequest(
+    val email: String,
+    val password: String,
+)
+
+@Serializable
 data class CreateUserRequest(
     @SerialName("externalKey") val email: String,
     @SerialName("displayName") val displayName: String,

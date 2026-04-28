@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -167,6 +168,46 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 }
 
                 item { RcSectionHeader(title = stringResource(R.string.settings_integrations_section)) }
+                item {
+                    RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                            Text(stringResource(R.string.settings_garmin_connect), style = RcTypography.titleMedium, color = rcColors.text)
+                            OutlinedTextField(
+                                value = s.garminEmail,
+                                onValueChange = viewModel::updateGarminEmail,
+                                label = { Text(stringResource(R.string.settings_garmin_email)) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                            )
+                            OutlinedTextField(
+                                value = s.garminPassword,
+                                onValueChange = viewModel::updateGarminPassword,
+                                label = { Text(stringResource(R.string.settings_garmin_password)) },
+                                visualTransformation = PasswordVisualTransformation(),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                                RcButton(
+                                    text = stringResource(R.string.settings_garmin_save),
+                                    onClick = viewModel::connectGarmin,
+                                    isLoading = s.isGarminSaving,
+                                    style = RcButtonStyle.SECONDARY,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                RcButton(
+                                    text = stringResource(R.string.settings_garmin_disconnect),
+                                    onClick = viewModel::disconnectGarmin,
+                                    isLoading = s.isGarminDisconnecting,
+                                    style = RcButtonStyle.GHOST,
+                                    modifier = Modifier.weight(1f),
+                                )
+                            }
+                        }
+                    }
+                }
                 if (s.integrations.isEmpty()) {
                     item {
                         Text(

@@ -5,6 +5,7 @@ import com.suminchoi.coachapp.core.model.CreateUserRequest
 import com.suminchoi.coachapp.core.model.CreateUserResponse
 import com.suminchoi.coachapp.core.model.DashboardResponse
 import com.suminchoi.coachapp.core.model.FeedbackRequest
+import com.suminchoi.coachapp.core.model.GarminCredentialRequest
 import com.suminchoi.coachapp.core.model.GoalRequest
 import com.suminchoi.coachapp.core.model.InjuryRequest
 import com.suminchoi.coachapp.core.model.IntegrationsResponse
@@ -13,10 +14,12 @@ import com.suminchoi.coachapp.core.model.TrendsResponse
 import com.suminchoi.coachapp.core.model.UpdatePreferencesRequest
 import com.suminchoi.coachapp.core.model.User
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface ApiService {
     @GET("v1/me")
@@ -36,6 +39,12 @@ interface ApiService {
 
     @GET("v1/me/integrations")
     suspend fun getIntegrations(): IntegrationsResponse
+
+    @PUT("v1/me/integrations/garmin")
+    suspend fun connectGarmin(@Body req: GarminCredentialRequest): IntegrationsResponse
+
+    @DELETE("v1/me/integrations/garmin")
+    suspend fun disconnectGarmin(): IntegrationsResponse
 
     @PATCH("v1/me/preferences")
     suspend fun updatePreferences(@Body req: UpdatePreferencesRequest): User

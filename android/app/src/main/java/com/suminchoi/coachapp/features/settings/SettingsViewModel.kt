@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suminchoi.coachapp.core.auth.AuthStore
 import com.suminchoi.coachapp.core.model.AvailabilityRequest
+import com.suminchoi.coachapp.core.model.GarminCredentialRequest
 import com.suminchoi.coachapp.core.model.InjuryRequest
 import com.suminchoi.coachapp.core.model.Integration
 import com.suminchoi.coachapp.core.model.UpdatePreferencesRequest
@@ -26,7 +27,11 @@ sealed interface SettingsUiState {
         val isSyncing: Boolean = false,
         val isAvailabilitySaving: Boolean = false,
         val isInjurySaving: Boolean = false,
+        val isGarminSaving: Boolean = false,
+        val isGarminDisconnecting: Boolean = false,
         val isDirty: Boolean = false,
+        val garminEmail: String = "",
+        val garminPassword: String = "",
         val availabilityWeekday: Int = 5,
         val availabilityMaxMinutes: String = "90",
         val availabilitySessionType: String = "long_run",
@@ -73,6 +78,8 @@ class SettingsViewModel @Inject constructor(
     fun updateAvailabilityWeekday(v: Int) = updateSuccess { copy(availabilityWeekday = v, message = null, error = null) }
     fun updateAvailabilityMaxMinutes(v: String) = updateSuccess { copy(availabilityMaxMinutes = v, message = null, error = null) }
     fun updateAvailabilitySessionType(v: String) = updateSuccess { copy(availabilitySessionType = v, message = null, error = null) }
+    fun updateGarminEmail(v: String) = updateSuccess { copy(garminEmail = v, message = null, error = null) }
+    fun updateGarminPassword(v: String) = updateSuccess { copy(garminPassword = v, message = null, error = null) }
     fun updateInjuryArea(v: String) = updateSuccess { copy(injuryArea = v, message = null, error = null) }
     fun updateInjurySeverity(v: String) = updateSuccess { copy(injurySeverity = v, message = null, error = null) }
     fun updateInjuryNotes(v: String) = updateSuccess { copy(injuryNotes = v, message = null, error = null) }
@@ -139,6 +146,50 @@ class SettingsViewModel @Inject constructor(
                 _state.value = s.copy(isAvailabilitySaving = false, message = "가용 시간이 저장되었습니다.")
             } catch (e: Exception) {
                 _state.value = s.copy(isAvailabilitySaving = false, error = e.message ?: "가용 시간 저장에 실패했습니다.")
+            }
+        }
+    }
+
+    fun connectGarmin() {
+        val s = _state.value as? SettingsUiState.Success ?: return
+        if (s.garminEmail.isBlank() || s.garminPassword.isBlank()) {
+            _state.value = s.copy(error = "가민 이메일과 비밀번호를 입력해주세요.", message = null)
+            return
+        }
+        viewModelScope.launch {
+            _state.value = s.copy(isGarminSaving = true, message = null, error = null)
+            try {
+                val integrations = api.connectGarmin(
+                    GarminCredentialRequest(
+                        email = s.garminEmail.trim(),
+                        password = s.garminPassword,
+                    )
+                ).integrations
+                _state.value = s.copy(
+                    integrations = integrations,
+                    isGarminSaving = false,
+                    garminPassword = "",
+                    message = "가민 연결 정보가 저장되었습니다.",
+                )
+            } catch (e: Exception) {
+                _state.value = s.copy(isGarminSaving = false, error = e.message ?: "가민 연결에 실패했습니다.")
+            }
+        }
+    }
+
+    fun disconnectGarmin() {
+        val s = _state.value as? SettingsUiState.Success ?: return
+        viewModelScope.launch {
+            _state.value = s.copy(isGarminDisconnecting = true, message = null, error = null)
+            try {
+                val integrations = api.disconnectGarmin().integrations
+                _state.value = s.copy(
+                    integrations = integrations,
+                    isGarminDisconnecting = false,
+                    message = "가민 연결이 해제되었습니다.",
+                )
+            } catch (e: Exception) {
+                _state.value = s.copy(isGarminDisconnecting = false, error = e.message ?: "가민 연결 해제에 실패했습니다.")
             }
         }
     }

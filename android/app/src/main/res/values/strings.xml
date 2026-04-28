@@ -81,6 +81,11 @@
     <string name="settings_injury_severity">통증 정도(1-10)</string>
     <string name="settings_injury_notes">부상 메모</string>
     <string name="settings_save_injury">부상 상태 저장</string>
+    <string name="settings_garmin_connect">가민 연결</string>
+    <string name="settings_garmin_email">가민 이메일</string>
+    <string name="settings_garmin_password">가민 비밀번호</string>
+    <string name="settings_garmin_save">연결 저장</string>
+    <string name="settings_garmin_disconnect">연결 해제</string>
     <string name="settings_no_integrations">연동된 앱이 없습니다.</string>
     <string name="settings_sync_cta">가민 동기화</string>
     <string name="settings_syncing">동기화 중…</string>
