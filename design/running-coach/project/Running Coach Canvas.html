@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Running Coach — Design Canvas</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="src/tokens.jsx"></script>
+<script type="text/babel" src="src/primitives.jsx"></script>
+<script type="text/babel" src="src/data.jsx"></script>
+<script type="text/babel" src="src/home.jsx"></script>
+<script type="text/babel" src="src/weekly.jsx"></script>
+<script type="text/babel" src="src/workout.jsx"></script>
+<script type="text/babel" src="src/trends.jsx"></script>
+<script type="text/babel" src="src/feedback.jsx"></script>
+<script type="text/babel" src="src/goals.jsx"></script>
+<script type="text/babel" src="src/settings.jsx"></script>
+<script type="text/babel" src="src/onboarding.jsx"></script>
+<script type="text/babel" src="src/app.jsx"></script>
+
+<script type="text/babel">
+const W = 390, H = 844;
+
+// Wrap a screen as a full phone frame, so artboards look final.
+function Frame({ theme = 'dark', children }) {
+  return <RCPhone theme={theme} width={W} height={H}>{children}</RCPhone>;
+}
+
+// Each sub-screen needs its bottom tab bar rendered too so it looks real.
+function WithTabs({ theme, active, children }) {
+  return (
+    <div style={{ height: '100%', position: 'relative' }}>
+      <div style={{ position: 'absolute', inset: 0 }}>{children}</div>
+      <RCTabBar theme={theme} active={active} onChange={() => {}} />
+    </div>
+  );
+}
+
+function CanvasRoot() {
+  return (
+    <DesignCanvas>
+
+      {/* HOME HERO VARIATIONS */}
+      <DCSection id="home-hero" title="01 · Home / Today — Hero variations"
+        subtitle="Four treatments of the primary session card. Same data, different emphasis.">
+        {['bold','split','mono','zoned'].map(v => (
+          <DCArtboard key={v} id={`home-${v}`} label={`Hero · ${v[0].toUpperCase() + v.slice(1)}`} width={W} height={H}>
+            <Frame theme="dark">
+              <WithTabs theme="dark" active="home">
+                <RCHomeScreen theme="dark" heroVariant={v} sessionKey="threshold"/>
+              </WithTabs>
+            </Frame>
+          </DCArtboard>
+        ))}
+        <DCArtboard id="home-light" label="Hero · Bold (Light)" width={W} height={H}>
+          <Frame theme="light">
+            <WithTabs theme="light" active="home">
+              <RCHomeScreen theme="light" heroVariant="bold" sessionKey="threshold"/>
+            </WithTabs>
+          </Frame>
+        </DCArtboard>
+      </DCSection>
+
+      {/* HOME — SESSION TYPE VARIATIONS */}
+      <DCSection id="home-sessions" title="02 · Home — Session type states"
+        subtitle="Today's accent is tied to the session zone. Rest day uses neutral gray + different copy.">
+        {[
+          ['recovery', 'Recovery'],
+          ['base', 'Base'],
+          ['threshold', 'Threshold'],
+          ['interval', 'Interval'],
+          ['rest', 'Rest'],
+        ].map(([k, label]) => (
+          <DCArtboard key={k} id={`home-s-${k}`} label={label} width={W} height={H}>
+            <Frame theme="dark">
+              <WithTabs theme="dark" active="home">
+                <RCHomeScreen theme="dark" heroVariant="bold" sessionKey={k}/>
+              </WithTabs>
+            </Frame>
+          </DCArtboard>
+        ))}
+      </DCSection>
+
+      {/* WEEKLY */}
+      <DCSection id="weekly" title="03 · Weekly Plan — Layout variations"
+        subtitle="Strip + list is the default. Calendar cards are denser. Timeline emphasizes progression.">
+        <DCArtboard id="weekly-strip" label="A · Strip + list" width={W} height={H}>
+          <Frame theme="dark"><WithTabs theme="dark" active="weekly"><RCWeeklyScreen theme="dark" variant="strip"/></WithTabs></Frame>
+        </DCArtboard>
+        <DCArtboard id="weekly-cal" label="B · Calendar cards" width={W} height={H}>
+          <Frame theme="dark"><WithTabs theme="dark" active="weekly"><RCWeeklyScreen theme="dark" variant="calendar"/></WithTabs></Frame>
+        </DCArtboard>
+        <DCArtboard id="weekly-timeline" label="C · Timeline" width={W} height={H}>
+          <Frame theme="dark"><WithTabs theme="dark" active="weekly"><RCWeeklyScreen theme="dark" variant="timeline"/></WithTabs></Frame>
+        </DCArtboard>
+        <DCArtboard id="weekly-light" label="D · Strip (Light)" width={W} height={H}>
+          <Frame theme="light"><WithTabs theme="light" active="weekly"><RCWeeklyScreen theme="light" variant="strip"/></WithTabs></Frame>
+        </DCArtboard>
+      </DCSection>
+
+      {/* WORKOUT DETAIL */}
+      <DCSection id="workout" title="04 · Workout Detail"
+        subtitle="Before and after. Timeline visual on the step cards, Garmin upload badge, completion compare.">
+        <DCArtboard id="workout-before" label="A · Before session" width={W} height={H}>
+          <Frame theme="dark"><RCWorkoutScreen theme="dark" sessionKey="threshold" onBack={() => {}} /></Frame>
+        </DCArtboard>
+        <DCArtboard id="workout-after" label="B · After · Actual vs Planned" width={W} height={H}>
+          <Frame theme="dark"><RCWorkoutScreen theme="dark" sessionKey="threshold" completed onBack={() => {}} /></Frame>
+        </DCArtboard>
+        <DCArtboard id="workout-interval" label="C · Interval variant" width={W} height={H}>
+          <Frame theme="dark"><RCWorkoutScreen theme="dark" sessionKey="interval" onBack={() => {}} /></Frame>
+        </DCArtboard>
+      </DCSection>
+
+      {/* TRENDS */}
+      <DCSection id="trends" title="05 · Trends"
+        subtitle="12-week km bars + ACWR line overlay with 1.5 cap. Pace zones and PRs below.">
+        <DCArtboard id="trends-dark" label="Dark" width={W} height={H}>
+          <Frame theme="dark"><WithTabs theme="dark" active="trends"><RCTrendsScreen theme="dark"/></WithTabs></Frame>
+        </DCArtboard>
+        <DCArtboard id="trends-light" label="Light" width={W} height={H}>
+          <Frame theme="light"><WithTabs theme="light" active="trends"><RCTrendsScreen theme="light"/></WithTabs></Frame>
+        </DCArtboard>
+      </DCSection>
+
+      {/* FEEDBACK */}
+      <DCSection id="feedback" title="06 · Feedback Input"
+        subtitle="1–10 sliders + body silhouette for pain localization + optional note.">
+        <DCArtboard id="feedback-dark" label="Feedback sheet" width={W} height={H}>
+          <Frame theme="dark"><RCFeedbackScreen theme="dark" onClose={() => {}}/></Frame>
+        </DCArtboard>
+      </DCSection>
+
+      {/* GOALS */}
+      <DCSection id="goals" title="07 · Goals & Availability"
+        subtitle="Active race, phase progress, weekly availability toggles.">
+        <DCArtboard id="goals-dark" label="Goals" width={W} height={H}>
+          <Frame theme="dark"><WithTabs theme="dark" active="goals"><RCGoalsScreen theme="dark"/></WithTabs></Frame>
+        </DCArtboard>
+      </DCSection>
+
+      {/* SETTINGS */}
+      <DCSection id="settings" title="08 · Settings"
+        subtitle="Scheduled times, planner mode explained in plain language, integrations.">
+        <DCArtboard id="settings-dark" label="Settings" width={W} height={H}>
+          <Frame theme="dark"><WithTabs theme="dark" active="settings"><RCSettingsScreen theme="dark"/></WithTabs></Frame>
+        </DCArtboard>
+      </DCSection>
+
+      {/* ONBOARDING */}
+      <DCSection id="onboarding" title="09 · Onboarding"
+        subtitle="Welcome → Garmin → Goal → Availability → Generating first plan.">
+        {[0, 1, 2, 3, 4].map(i => (
+          <DCArtboard key={i} id={`onb-${i}`}
+            label={['Welcome','Connect Garmin','Goal race','Availability','Generating'][i]}
+            width={W} height={H}>
+            <Frame theme="dark">
+              <RCOnboardingScreen theme="dark" step={i} onStepChange={() => {}} onComplete={() => {}}/>
+            </Frame>
+          </DCArtboard>
+        ))}
+      </DCSection>
+
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<CanvasRoot/>);
+</script>
+</body>
+</html>

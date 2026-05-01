@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Running Coach — Prototype</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #e8e5de; min-height: 100vh; }
+  body { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="src/tokens.jsx"></script>
+<script type="text/babel" src="src/primitives.jsx"></script>
+<script type="text/babel" src="src/data.jsx"></script>
+<script type="text/babel" src="src/home.jsx"></script>
+<script type="text/babel" src="src/weekly.jsx"></script>
+<script type="text/babel" src="src/workout.jsx"></script>
+<script type="text/babel" src="src/trends.jsx"></script>
+<script type="text/babel" src="src/feedback.jsx"></script>
+<script type="text/babel" src="src/goals.jsx"></script>
+<script type="text/babel" src="src/settings.jsx"></script>
+<script type="text/babel" src="src/onboarding.jsx"></script>
+<script type="text/babel" src="src/app.jsx"></script>
+
+<script type="text/babel">
+function PrototypeRoot() {
+  const { values, update } = useEditModeBridge(TWEAK_DEFAULTS);
+  const t = rcTokens(values.theme);
+  return (
+    <div style={{
+      minHeight: '100vh', width: '100%',
+      background: values.theme === 'dark' ? '#1b1714' : '#e8e5de',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '40px 20px', boxSizing: 'border-box',
+      backgroundImage: `radial-gradient(circle at 30% 20%, ${values.theme === 'dark' ? 'rgba(74,158,219,0.04)' : 'rgba(11,18,32,0.03)'}, transparent 60%)`,
+    }}>
+      <RCPhone theme={values.theme} width={390} height={844}>
+        <RCApp
+          theme={values.theme}
+          initialTab="home"
+          sessionKey={values.sessionKey}
+          completed={values.completed}
+          heroVariant={values.heroVariant}
+          weeklyVariant={values.weeklyVariant}
+        />
+      </RCPhone>
+      <TweaksPanel values={values} update={update} theme={values.theme} />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<PrototypeRoot/>);
+</script>
+</body>
+</html>
