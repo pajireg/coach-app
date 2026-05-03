@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.suminchoi.coachapp.R
+import com.suminchoi.coachapp.core.model.Activity
+import com.suminchoi.coachapp.core.model.DashboardResponse
 import com.suminchoi.coachapp.core.model.PlannedWorkout
 import com.suminchoi.coachapp.core.model.toZone
 import com.suminchoi.coachapp.design.RcTypography
@@ -42,7 +44,7 @@ import com.suminchoi.coachapp.design.rcColors
 
 @Composable
 fun WeeklyScreen(
-    onOpenWorkout: (PlannedWorkout) -> Unit,
+    onOpenWorkout: (PlannedWorkout, Activity?) -> Unit,
     viewModel: WeeklyViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -68,7 +70,7 @@ fun WeeklyScreen(
                     item {
                         WeekStrip(
                             workouts = workouts,
-                            onTap = { onOpenWorkout(it) },
+                            onTap = { onOpenWorkout(it, s.dashboard.matchActivity(it)) },
                         )
                     }
 
@@ -89,7 +91,7 @@ fun WeeklyScreen(
                             RcCard(
                                 modifier = Modifier
                                     .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
-                                    .clickable { onOpenWorkout(workout) },
+                                    .clickable { onOpenWorkout(workout, s.dashboard.matchActivity(workout)) },
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -125,6 +127,9 @@ fun WeeklyScreen(
         }
     }
 }
+
+private fun DashboardResponse.matchActivity(workout: PlannedWorkout): Activity? =
+    recentActivities.firstOrNull { it.activityDate == workout.date }
 
 @Composable
 private fun WeekStrip(workouts: List<PlannedWorkout>, onTap: (PlannedWorkout) -> Unit) {

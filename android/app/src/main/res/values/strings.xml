@@ -29,14 +29,23 @@
     <string name="workout_distance">거리</string>
     <string name="workout_type">유형</string>
     <string name="workout_rest">휴식</string>
+    <string name="workout_plan_header">훈련 계획</string>
+    <string name="workout_guidance_header">진행 가이드</string>
+    <string name="workout_intensity">강도</string>
+    <string name="workout_status_completed">완료</string>
+    <string name="workout_status_planned">예정</string>
+    <string name="workout_status_rest">휴식</string>
     <string name="workout_actual_header">실제 결과</string>
     <string name="workout_quality">실행 품질</string>
+    <string name="workout_match_score">일치도</string>
     <string name="workout_garmin_cta">가민에서 실행</string>
+    <string name="workout_close_cta">닫기</string>
 
     <!-- Activity -->
     <string name="activity_distance">거리</string>
     <string name="activity_pace">평균 페이스</string>
     <string name="activity_hr">평균 심박</string>
+    <string name="activity_duration">시간</string>
 
     <!-- Weekly -->
     <string name="weekly_empty">이번 주 훈련 계획이 없습니다.</string>

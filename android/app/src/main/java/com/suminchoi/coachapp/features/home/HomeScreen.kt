@@ -1,5 +1,6 @@
 package com.suminchoi.coachapp.features.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.suminchoi.coachapp.R
 import com.suminchoi.coachapp.core.model.Activity
+import com.suminchoi.coachapp.core.model.DashboardResponse
 import com.suminchoi.coachapp.core.model.PlannedWorkout
 import com.suminchoi.coachapp.core.model.formatPace
 import com.suminchoi.coachapp.core.model.toZone
@@ -49,7 +51,7 @@ import com.suminchoi.coachapp.design.rcColors
 @Composable
 fun HomeScreen(
     onOpenFeedback: () -> Unit,
-    onOpenWorkout: (PlannedWorkout) -> Unit,
+    onOpenWorkout: (PlannedWorkout, Activity?) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -83,7 +85,10 @@ fun HomeScreen(
 
                         item {
                             if (today != null) {
-                                HeroCard(workout = today, onClick = { onOpenWorkout(today) })
+                                HeroCard(
+                                    workout = today,
+                                    onClick = { onOpenWorkout(today, dashboard.matchActivity(today)) },
+                                )
                             }
                         }
 
@@ -103,7 +108,7 @@ fun HomeScreen(
                             items(dashboard.currentPlan.drop(1).take(3)) { workout ->
                                 WorkoutRow(
                                     workout = workout,
-                                    onClick = { onOpenWorkout(workout) },
+                                    onClick = { onOpenWorkout(workout, dashboard.matchActivity(workout)) },
                                 )
                             }
                         }
@@ -131,7 +136,8 @@ private fun HeroCard(workout: PlannedWorkout, onClick: () -> Unit) {
     RcCard(
         modifier = Modifier
             .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick() },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
             RcZoneBadge(sessionType = sessionType)
@@ -180,6 +186,7 @@ private fun WorkoutRow(workout: PlannedWorkout, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
@@ -192,6 +199,9 @@ private fun WorkoutRow(workout: PlannedWorkout, onClick: () -> Unit) {
         Text(workout.plannedMinutes?.let { "${it}분" } ?: "-", style = RcTypography.monoBody, color = rcColors.textDim)
     }
 }
+
+private fun DashboardResponse.matchActivity(workout: PlannedWorkout): Activity? =
+    recentActivities.firstOrNull { it.activityDate == workout.date }
 
 @Composable
 private fun MetricChip(label: String, value: String) {
