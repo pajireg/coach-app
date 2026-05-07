@@ -11,11 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.suminchoi.coachapp.design.Radius
 import com.suminchoi.coachapp.design.RcTypography
-import com.suminchoi.coachapp.design.ZoneColors
 import com.suminchoi.coachapp.design.rcColors
 
 enum class RcButtonStyle { PRIMARY, SECONDARY, GHOST }
@@ -38,10 +36,13 @@ fun RcButton(
             modifier = buttonModifier,
             enabled = enabled && !isLoading,
             shape = shape,
-            colors = ButtonDefaults.buttonColors(containerColor = ZoneColors.base),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = rcColors.text,
+                contentColor = rcColors.bg,
+            ),
         ) {
-            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
-            else Text(text, style = RcTypography.titleMedium, color = Color.White)
+            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(18.dp), color = rcColors.bg, strokeWidth = 2.dp)
+            else Text(text, style = RcTypography.titleMedium, color = rcColors.bg)
         }
 
         RcButtonStyle.SECONDARY -> OutlinedButton(

@@ -1,7 +1,9 @@
 package com.suminchoi.coachapp.design.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -31,14 +33,22 @@ fun zoneColor(zone: Zone) = when (zone) {
 fun RcZoneBadge(sessionType: String, modifier: Modifier = Modifier) {
     val zone = sessionType.toZone()
     val color = zoneColor(zone)
-    Box(
+    Row(
         modifier = modifier
-            .clip(RoundedCornerShape(100.dp))
-            .background(color.copy(alpha = 0.15f))
-            .padding(horizontal = 10.dp, vertical = 4.dp),
+            .clip(RoundedCornerShape(5.dp))
+            .background(color.copy(alpha = 0.22f))
+            .padding(horizontal = 8.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
     ) {
+        Box(
+            modifier = Modifier
+                .size(5.dp)
+                .clip(CircleShape)
+                .background(color),
+        )
         Text(
-            text = zone.label(),
+            text = zone.label().uppercase(),
             style = RcTypography.labelSmall,
             color = color,
         )

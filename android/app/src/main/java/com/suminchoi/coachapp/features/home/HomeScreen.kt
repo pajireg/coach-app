@@ -1,5 +1,6 @@
 package com.suminchoi.coachapp.features.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,18 +15,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,7 +35,9 @@ import com.suminchoi.coachapp.R
 import com.suminchoi.coachapp.core.model.Activity
 import com.suminchoi.coachapp.core.model.DashboardResponse
 import com.suminchoi.coachapp.core.model.PlannedWorkout
+import com.suminchoi.coachapp.core.model.Zone
 import com.suminchoi.coachapp.core.model.formatPace
+import com.suminchoi.coachapp.core.model.label
 import com.suminchoi.coachapp.core.model.toZone
 import com.suminchoi.coachapp.design.RcTypography
 import com.suminchoi.coachapp.design.Spacing
@@ -117,15 +120,40 @@ fun HomeScreen(
             }
         }
 
-        FloatingActionButton(
-            onClick = onOpenFeedback,
-            shape = CircleShape,
-            containerColor = ZoneColors.base,
+        // FAB — chat/feedback icon, dark pill above tab bar
+        val fabBg = rcColors.text
+        val fabFg = rcColors.bg
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 24.dp, bottom = 132.dp),
+                .padding(end = 20.dp, bottom = 132.dp)
+                .size(52.dp)
+                .clip(CircleShape)
+                .background(fabBg)
+                .clickable { onOpenFeedback() },
+            contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.home_feedback_fab), tint = androidx.compose.ui.graphics.Color.White)
+            androidx.compose.foundation.Canvas(modifier = Modifier.size(20.dp)) {
+                val s = size.width
+                val color = fabFg
+                val stroke = androidx.compose.ui.graphics.drawscope.Stroke(
+                    width = 1.8.dp.toPx(),
+                    join = androidx.compose.ui.graphics.StrokeJoin.Round,
+                )
+                val path = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(s * 0.2f, s * 0.25f)
+                    lineTo(s * 0.8f, s * 0.25f)
+                    lineTo(s * 0.8f, s * 0.65f)
+                    lineTo(s * 0.4f, s * 0.65f)
+                    lineTo(s * 0.15f, s * 0.90f)
+                    lineTo(s * 0.2f, s * 0.65f)
+                    close()
+                }
+                drawPath(path, color, style = stroke)
+                // + icon inside bubble
+                drawLine(color, androidx.compose.ui.geometry.Offset(s * 0.5f, s * 0.35f), androidx.compose.ui.geometry.Offset(s * 0.5f, s * 0.55f), 1.8.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round)
+                drawLine(color, androidx.compose.ui.geometry.Offset(s * 0.40f, s * 0.45f), androidx.compose.ui.geometry.Offset(s * 0.60f, s * 0.45f), 1.8.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round)
+            }
         }
     }
 }
@@ -133,22 +161,102 @@ fun HomeScreen(
 @Composable
 private fun HeroCard(workout: PlannedWorkout, onClick: () -> Unit) {
     val sessionType = workout.sessionType ?: "rest"
-    RcCard(
+    val zone = sessionType.toZone()
+    val accent = zoneColor(zone)
+
+    Box(
         modifier = Modifier
             .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
             .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
             .clickable { onClick() },
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            RcZoneBadge(sessionType = sessionType)
-            Text(workout.name, style = RcTypography.titleLarge, color = rcColors.text)
-            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                MetricChip(
-                    label = stringResource(R.string.workout_planned_min),
-                    value = workout.plannedMinutes?.let { "${it}분" } ?: "-",
+        // card background via RcCard-like treatment
+        val colors = rcColors
+        val bgColor = if (colors.isDark) Color(0xFF1C263C).copy(alpha = 0.62f)
+        else Color.White.copy(alpha = 0.72f)
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .drawBehind { drawRect(bgColor) }
+                .padding(top = 3.dp),
+        ) {
+            // top accent stripe
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(3.dp)
+                    .background(accent)
+                    .align(Alignment.TopCenter),
+            )
+
+            Column(
+                modifier = Modifier.padding(horizontal = 22.dp, vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RcZoneBadge(sessionType = sessionType)
+                    if (workout.date.isNotBlank()) {
+                        Text(
+                            text = workout.date,
+                            style = RcTypography.bodySmall,
+                            color = rcColors.textMuted,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+                Text(
+                    text = workout.name,
+                    style = RcTypography.titleLarge,
+                    color = rcColors.text,
                 )
                 if (workout.workoutType != null) {
-                    MetricChip(label = stringResource(R.string.workout_type), value = workout.workoutType)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = workout.workoutType,
+                        style = RcTypography.bodySmall,
+                        color = rcColors.textDim,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(22.dp))
+
+                // metric row with divider
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Bottom,
+                ) {
+                    if (workout.plannedMinutes != null) {
+                        HeroMetric(
+                            label = stringResource(R.string.workout_planned_min),
+                            value = "${workout.plannedMinutes}",
+                            unit = "분",
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    if (workout.plannedMinutes != null && !workout.isRest) {
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .width(0.5.dp)
+                                .height(48.dp)
+                                .background(rcColors.border),
+                        )
+                    }
+                    if (!workout.isRest) {
+                        HeroMetric(
+                            label = stringResource(R.string.workout_intensity),
+                            value = zone.label(),
+                            unit = "",
+                            modifier = Modifier.weight(1.1f),
+                        )
+                    }
                 }
             }
         }
@@ -156,25 +264,89 @@ private fun HeroCard(workout: PlannedWorkout, onClick: () -> Unit) {
 }
 
 @Composable
-private fun ActivityCard(activity: Activity) {
-    RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)) {
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RcZoneDot(sessionType = activity.sessionType ?: "base")
-                Spacer(modifier = Modifier.width(Spacing.sm))
-                Text(activity.title, style = RcTypography.titleMedium, color = rcColors.text)
+private fun HeroMetric(label: String, value: String, unit: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Text(
+            text = label.uppercase(),
+            style = RcTypography.labelSmall,
+            color = rcColors.textMuted,
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text(
+                text = value,
+                style = RcTypography.metricMedium,
+                color = rcColors.text,
+            )
+            if (unit.isNotEmpty()) {
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(
+                    text = unit,
+                    style = RcTypography.bodySmall,
+                    color = rcColors.textDim,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                )
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                if (activity.distanceKm != null) {
-                    MetricChip(label = stringResource(R.string.activity_distance), value = "%.1fkm".format(activity.distanceKm))
+        }
+    }
+}
+
+@Composable
+private fun ActivityCard(activity: Activity) {
+    RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            // zone icon box
+            val accent = zoneColor((activity.sessionType ?: "base").toZone())
+            Box(
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(accent.copy(alpha = 0.20f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                // checkmark
+                androidx.compose.foundation.Canvas(modifier = Modifier.size(20.dp)) {
+                    val s = size.width
+                    val stroke = androidx.compose.ui.graphics.drawscope.Stroke(
+                        width = 2.2.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round,
+                    )
+                    val path = androidx.compose.ui.graphics.Path().apply {
+                        moveTo(s * 0.2f, s * 0.5f)
+                        lineTo(s * 0.44f, s * 0.74f)
+                        lineTo(s * 0.8f, s * 0.26f)
+                    }
+                    drawPath(path, accent, style = stroke)
                 }
-                if (activity.avgPaceSeconds != null) {
-                    MetricChip(label = stringResource(R.string.activity_pace), value = formatPace(activity.avgPaceSeconds))
-                } else if (activity.avgPace != null) {
-                    MetricChip(label = stringResource(R.string.activity_pace), value = activity.avgPace)
+            }
+
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(activity.title, style = RcTypography.titleMedium, color = rcColors.text)
+                    if (activity.targetMatchScore != null) {
+                        Text(
+                            text = "${(activity.targetMatchScore * 100).toInt()}%",
+                            style = RcTypography.monoBody,
+                            color = ZoneColors.base,
+                        )
+                    }
                 }
-                if (activity.averageHr != null) {
-                    MetricChip(label = stringResource(R.string.activity_hr), value = "${activity.averageHr}bpm")
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                    if (activity.distanceKm != null) {
+                        Text("%.1fkm".format(activity.distanceKm), style = RcTypography.monoBody, color = rcColors.textDim)
+                    }
+                    if (activity.avgPaceSeconds != null) {
+                        Text(formatPace(activity.avgPaceSeconds), style = RcTypography.monoBody, color = rcColors.textDim)
+                    } else if (activity.avgPace != null) {
+                        Text(activity.avgPace, style = RcTypography.monoBody, color = rcColors.textDim)
+                    }
                 }
             }
         }
@@ -183,30 +355,66 @@ private fun ActivityCard(activity: Activity) {
 
 @Composable
 private fun WorkoutRow(workout: PlannedWorkout, onClick: () -> Unit) {
+    val accent = zoneColor(workout.sessionType?.toZone() ?: com.suminchoi.coachapp.core.model.Zone.REST)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs),
+            .padding(horizontal = Spacing.screenHorizontal, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
-        RcZoneDot(sessionType = workout.sessionType ?: "rest")
+        // date column
+        Column(
+            modifier = Modifier
+                .width(40.dp)
+                .padding(end = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = workout.date.takeLast(2).trimStart('0'),
+                style = RcTypography.monoBody,
+                color = rcColors.text,
+            )
+            Text(
+                text = workout.date.take(7).takeLast(2) + "월",
+                style = RcTypography.labelSmall,
+                color = rcColors.textMuted,
+            )
+        }
+        // zone bar
+        Box(
+            modifier = Modifier
+                .width(4.dp)
+                .height(32.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(accent),
+        )
         Column(modifier = Modifier.weight(1f)) {
             Text(workout.name, style = RcTypography.bodyMedium, color = rcColors.text)
-            Text(workout.date, style = RcTypography.bodySmall, color = rcColors.textMuted)
+            if (workout.workoutType != null) {
+                Text(workout.workoutType, style = RcTypography.bodySmall, color = rcColors.textDim)
+            }
         }
-        Text(workout.plannedMinutes?.let { "${it}분" } ?: "-", style = RcTypography.monoBody, color = rcColors.textDim)
+        if (!workout.isRest && workout.plannedMinutes != null) {
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "${workout.plannedMinutes}",
+                    style = RcTypography.monoBody,
+                    color = rcColors.text,
+                )
+                Text("MIN", style = RcTypography.labelSmall, color = rcColors.textMuted)
+            }
+        }
     }
+    Box(
+        modifier = Modifier
+            .padding(start = Spacing.screenHorizontal)
+            .fillMaxWidth()
+            .height(0.5.dp)
+            .background(rcColors.border),
+    )
 }
 
 private fun DashboardResponse.matchActivity(workout: PlannedWorkout): Activity? =
     recentActivities.firstOrNull { it.activityDate == workout.date }
-
-@Composable
-private fun MetricChip(label: String, value: String) {
-    Column {
-        Text(label.uppercase(), style = RcTypography.labelSmall, color = rcColors.textMuted)
-        Text(value, style = RcTypography.monoBody, color = rcColors.text)
-    }
-}

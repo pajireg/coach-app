@@ -1,5 +1,6 @@
 package com.suminchoi.coachapp.features.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +33,7 @@ import com.suminchoi.coachapp.design.components.RcButtonStyle
 import com.suminchoi.coachapp.design.components.RcCard
 import com.suminchoi.coachapp.design.components.RcScreen
 import com.suminchoi.coachapp.design.components.RcSectionHeader
+import com.suminchoi.coachapp.design.components.RcSwitch
 import com.suminchoi.coachapp.design.components.RcZoneBadge
 import com.suminchoi.coachapp.design.rcColors
 
@@ -72,18 +73,18 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 item { RcSectionHeader(title = stringResource(R.string.settings_preferences_section)) }
                 item {
                     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
-                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                            PreferenceRow(label = stringResource(R.string.settings_timezone), value = user.preferences.timezone)
-                            PreferenceRow(label = stringResource(R.string.settings_locale), value = user.preferences.locale)
-                            PreferenceRow(label = stringResource(R.string.settings_run_mode), value = user.preferences.runMode)
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(stringResource(R.string.settings_include_strength), style = RcTypography.bodyMedium, color = rcColors.text)
-                                Switch(checked = user.preferences.includeStrength, onCheckedChange = viewModel::updateIncludeStrength)
-                            }
+                        Column {
+                            SettingsRow(label = stringResource(R.string.settings_timezone), value = user.preferences.timezone)
+                            SettingsRowDivider()
+                            SettingsRow(label = stringResource(R.string.settings_locale), value = user.preferences.locale)
+                            SettingsRowDivider()
+                            SettingsRow(label = stringResource(R.string.settings_run_mode), value = user.preferences.runMode)
+                            SettingsRowDivider()
+                            SettingsToggleRow(
+                                label = stringResource(R.string.settings_include_strength),
+                                checked = user.preferences.includeStrength,
+                                onCheckedChange = viewModel::updateIncludeStrength,
+                            )
                         }
                     }
                 }
@@ -230,7 +231,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 item {
                     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
                         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                            PreferenceRow(label = stringResource(R.string.settings_base_url), value = s.baseUrl)
+                            SettingsRow(label = stringResource(R.string.settings_base_url), value = s.baseUrl)
                             RcButton(
                                 text = if (s.isSyncing) stringResource(R.string.settings_syncing) else stringResource(R.string.settings_sync_cta),
                                 onClick = viewModel::sync,
@@ -289,15 +290,32 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun PreferenceRow(label: String, value: String) {
+private fun SettingsRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(label, style = RcTypography.bodyMedium, color = rcColors.text)
         Text(value, style = RcTypography.bodySmall, color = rcColors.textDim)
     }
+}
+
+@Composable
+private fun SettingsToggleRow(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(label, style = RcTypography.bodyMedium, color = rcColors.text)
+        RcSwitch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
+@Composable
+private fun SettingsRowDivider() {
+    Box(modifier = Modifier.fillMaxWidth().height(0.5.dp).background(rcColors.border))
 }
 
 @Composable
