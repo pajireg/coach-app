@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.suminchoi.coachapp.design.RcTypography
@@ -30,9 +31,9 @@ fun ScoreSlider(
     label: String,
     value: Int?,
     onValueChange: (Int?) -> Unit,
+    activeColor: Color = ZoneColors.base,
     modifier: Modifier = Modifier,
 ) {
-    val activeColor = ZoneColors.base
     val effectiveValue = value ?: 0
 
     Column(modifier = modifier.fillMaxWidth().padding(vertical = 14.dp)) {

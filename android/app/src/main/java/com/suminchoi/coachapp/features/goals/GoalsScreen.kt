@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,14 +20,14 @@ import com.suminchoi.coachapp.design.Spacing
 import com.suminchoi.coachapp.design.ZoneColors
 import com.suminchoi.coachapp.design.components.RcButton
 import com.suminchoi.coachapp.design.components.RcCard
-import com.suminchoi.coachapp.design.components.RcScreen
+import com.suminchoi.coachapp.design.components.RcTextField
 import com.suminchoi.coachapp.design.rcColors
 
 @Composable
 fun GoalsScreen(viewModel: GoalsViewModel = hiltViewModel()) {
     val form by viewModel.form.collectAsStateWithLifecycle()
 
-    RcScreen(title = stringResource(R.string.tab_goals)) {
+    com.suminchoi.coachapp.design.components.RcScreen(title = stringResource(R.string.tab_goals)) {
         item {
             RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)) {
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
@@ -38,49 +37,44 @@ fun GoalsScreen(viewModel: GoalsViewModel = hiltViewModel()) {
                         color = rcColors.text,
                     )
 
-                    OutlinedTextField(
+                    RcTextField(
                         value = form.goalName,
                         onValueChange = viewModel::updateGoalName,
-                        label = { Text(stringResource(R.string.goals_name_label)) },
-                        placeholder = { Text("서울 10K PB") },
+                        label = stringResource(R.string.goals_name_label),
+                        placeholder = "서울 10K PB",
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
                     )
 
-                    OutlinedTextField(
+                    RcTextField(
                         value = form.distance,
                         onValueChange = viewModel::updateDistance,
-                        label = { Text(stringResource(R.string.goals_distance_label)) },
-                        placeholder = { Text("10K") },
+                        label = stringResource(R.string.goals_distance_label),
+                        placeholder = "10K",
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
                     )
 
-                    OutlinedTextField(
+                    RcTextField(
                         value = form.raceDate,
                         onValueChange = viewModel::updateDate,
-                        label = { Text(stringResource(R.string.goals_date_label)) },
-                        placeholder = { Text("2026-10-01") },
+                        label = stringResource(R.string.goals_date_label),
+                        placeholder = "2026-10-01",
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
                     )
 
-                    OutlinedTextField(
+                    RcTextField(
                         value = form.goalTime,
                         onValueChange = viewModel::updateGoalTime,
-                        label = { Text(stringResource(R.string.goals_time_label)) },
-                        placeholder = { Text("49:00") },
+                        label = stringResource(R.string.goals_time_label),
+                        placeholder = "49:00",
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
                     )
 
-                    OutlinedTextField(
+                    RcTextField(
                         value = form.targetPace,
                         onValueChange = viewModel::updateTargetPace,
-                        label = { Text(stringResource(R.string.goals_pace_label)) },
-                        placeholder = { Text("4:54") },
+                        label = stringResource(R.string.goals_pace_label),
+                        placeholder = "4:54",
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
                     )
 
                     if (form.error != null) {

@@ -1,6 +1,7 @@
 package com.suminchoi.coachapp.features.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,17 +10,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,6 +37,7 @@ import com.suminchoi.coachapp.design.components.RcCard
 import com.suminchoi.coachapp.design.components.RcScreen
 import com.suminchoi.coachapp.design.components.RcSectionHeader
 import com.suminchoi.coachapp.design.components.RcSwitch
+import com.suminchoi.coachapp.design.components.RcTextField
 import com.suminchoi.coachapp.design.components.RcZoneBadge
 import com.suminchoi.coachapp.design.rcColors
 
@@ -62,7 +66,11 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 item {
                     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(user.displayName?.ifBlank { null } ?: user.email.ifBlank { user.externalKey }, style = RcTypography.titleMedium, color = rcColors.text)
+                            Text(
+                                user.displayName?.ifBlank { null } ?: user.email.ifBlank { user.externalKey },
+                                style = RcTypography.titleMedium,
+                                color = rcColors.text,
+                            )
                             if (user.garminEmail != null) {
                                 Text(user.garminEmail, style = RcTypography.bodySmall, color = rcColors.textDim)
                             }
@@ -93,31 +101,52 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 item {
                     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
                         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                            Text(stringResource(R.string.settings_weekday), style = RcTypography.bodyMedium, color = rcColors.text)
-                            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                            Text(
+                                stringResource(R.string.settings_weekday),
+                                style = RcTypography.bodyMedium,
+                                color = rcColors.text,
+                            )
+                            // Day toggle grid
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            ) {
                                 listOf("월", "화", "수", "목", "금", "토", "일").forEachIndexed { index, label ->
-                                    RcButton(
-                                        text = label,
-                                        onClick = { viewModel.updateAvailabilityWeekday(index) },
-                                        style = if (s.availabilityWeekday == index) RcButtonStyle.PRIMARY else RcButtonStyle.SECONDARY,
-                                        modifier = Modifier.weight(1f),
-                                    )
+                                    val isSelected = s.availabilityWeekday == index
+                                    val accent = ZoneColors.base
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(52.dp)
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(
+                                                if (isSelected) accent.copy(alpha = 0.15f)
+                                                else rcColors.bgElev2
+                                            )
+                                            .clickable { viewModel.updateAvailabilityWeekday(index) },
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            label,
+                                            style = RcTypography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = if (isSelected) accent else rcColors.textFaint,
+                                        )
+                                    }
                                 }
                             }
-                            OutlinedTextField(
+                            RcTextField(
                                 value = s.availabilityMaxMinutes,
                                 onValueChange = viewModel::updateAvailabilityMaxMinutes,
-                                label = { Text(stringResource(R.string.settings_max_minutes)) },
+                                label = stringResource(R.string.settings_max_minutes),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
                             )
-                            OutlinedTextField(
+                            RcTextField(
                                 value = s.availabilitySessionType,
                                 onValueChange = viewModel::updateAvailabilitySessionType,
-                                label = { Text(stringResource(R.string.settings_session_type)) },
+                                label = stringResource(R.string.settings_session_type),
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
                             )
                             RcButton(
                                 text = stringResource(R.string.settings_save_availability),
@@ -134,27 +163,26 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 item {
                     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
                         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                            OutlinedTextField(
+                            RcTextField(
                                 value = s.injuryArea,
                                 onValueChange = viewModel::updateInjuryArea,
-                                label = { Text(stringResource(R.string.settings_injury_area)) },
-                                placeholder = { Text("왼쪽 무릎") },
+                                label = stringResource(R.string.settings_injury_area),
+                                placeholder = "왼쪽 무릎",
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
                             )
-                            OutlinedTextField(
+                            RcTextField(
                                 value = s.injurySeverity,
                                 onValueChange = viewModel::updateInjurySeverity,
-                                label = { Text(stringResource(R.string.settings_injury_severity)) },
+                                label = stringResource(R.string.settings_injury_severity),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
                             )
-                            OutlinedTextField(
+                            RcTextField(
                                 value = s.injuryNotes,
                                 onValueChange = viewModel::updateInjuryNotes,
-                                label = { Text(stringResource(R.string.settings_injury_notes)) },
+                                label = stringResource(R.string.settings_injury_notes),
                                 modifier = Modifier.fillMaxWidth(),
+                                singleLine = false,
                                 minLines = 2,
                             )
                             RcButton(
@@ -173,22 +201,20 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     RcCard(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
                         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                             Text(stringResource(R.string.settings_garmin_connect), style = RcTypography.titleMedium, color = rcColors.text)
-                            OutlinedTextField(
+                            RcTextField(
                                 value = s.garminEmail,
                                 onValueChange = viewModel::updateGarminEmail,
-                                label = { Text(stringResource(R.string.settings_garmin_email)) },
+                                label = stringResource(R.string.settings_garmin_email),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
                             )
-                            OutlinedTextField(
+                            RcTextField(
                                 value = s.garminPassword,
                                 onValueChange = viewModel::updateGarminPassword,
-                                label = { Text(stringResource(R.string.settings_garmin_password)) },
+                                label = stringResource(R.string.settings_garmin_password),
                                 visualTransformation = PasswordVisualTransformation(),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                                 RcButton(

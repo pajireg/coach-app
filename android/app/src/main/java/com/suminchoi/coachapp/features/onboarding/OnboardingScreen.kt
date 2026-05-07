@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +32,7 @@ import com.suminchoi.coachapp.design.ZoneColors
 import com.suminchoi.coachapp.design.components.AmbientBackground
 import com.suminchoi.coachapp.design.components.RcButton
 import com.suminchoi.coachapp.design.components.RcButtonStyle
+import com.suminchoi.coachapp.design.components.RcTextField
 import com.suminchoi.coachapp.design.rcColors
 
 @Composable
@@ -75,27 +75,25 @@ fun OnboardingScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            OutlinedTextField(
+            RcTextField(
                 value = state.apiKey,
                 onValueChange = viewModel::updateApiKey,
-                label = { Text(stringResource(R.string.onboarding_api_key_label)) },
-                placeholder = { Text("sk-...") },
+                label = stringResource(R.string.onboarding_api_key_label),
+                placeholder = "sk-...",
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            RcTextField(
                 value = state.baseUrl,
                 onValueChange = viewModel::updateBaseUrl,
-                label = { Text(stringResource(R.string.onboarding_base_url_label)) },
-                placeholder = { Text("http://10.0.2.2:8624") },
+                label = stringResource(R.string.onboarding_base_url_label),
+                placeholder = "http://10.0.2.2:8624",
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
             )
 
             if (state.status != null) {
