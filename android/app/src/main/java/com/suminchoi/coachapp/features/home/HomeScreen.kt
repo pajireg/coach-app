@@ -164,37 +164,30 @@ private fun HeroCard(workout: PlannedWorkout, onClick: () -> Unit) {
     val zone = sessionType.toZone()
     val accent = zoneColor(zone)
 
-    Box(
+    val colors = rcColors
+    val bgColor = if (colors.isDark) Color(0xFF1C263C).copy(alpha = 0.62f)
+    else Color.White.copy(alpha = 0.72f)
+
+    Column(
         modifier = Modifier
             .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
+            .drawBehind { drawRect(bgColor) }
             .clickable { onClick() },
     ) {
-        // card background via RcCard-like treatment
-        val colors = rcColors
-        val bgColor = if (colors.isDark) Color(0xFF1C263C).copy(alpha = 0.62f)
-        else Color.White.copy(alpha = 0.72f)
-
+        // top accent stripe
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .drawBehind { drawRect(bgColor) }
-                .padding(top = 3.dp),
-        ) {
-            // top accent stripe
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(3.dp)
-                    .background(accent)
-                    .align(Alignment.TopCenter),
-            )
+                .height(3.dp)
+                .background(accent),
+        )
 
-            Column(
-                modifier = Modifier.padding(horizontal = 22.dp, vertical = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
+        Column(
+            modifier = Modifier.padding(start = 22.dp, end = 22.dp, top = 20.dp, bottom = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp),
+        ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -258,7 +251,6 @@ private fun HeroCard(workout: PlannedWorkout, onClick: () -> Unit) {
                         )
                     }
                 }
-            }
         }
     }
 }
