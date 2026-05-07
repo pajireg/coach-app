@@ -41,12 +41,13 @@ fun RcTabBar(
     modifier: Modifier = Modifier,
 ) {
     val colors = rcColors
-    val bgColor = if (colors.isDark) Color(0xFF14213C).copy(alpha = 0.88f)
-    else Color.White.copy(alpha = 0.88f)
-    val specularColor = if (colors.isDark) Color.White.copy(alpha = 0.22f)
-    else Color.White.copy(alpha = 0.90f)
-    val activePill = if (colors.isDark) Color.White.copy(alpha = 0.10f)
-    else Color(0xFF0B1220).copy(alpha = 0.06f)
+    // 블러 없는 환경에서 가독성을 위해 높은 불투명도 사용
+    val bgColor = if (colors.isDark) Color(0xFF0E1927).copy(alpha = 0.96f)
+    else Color(0xFFFEFDF9).copy(alpha = 0.97f)
+    val specularColor = if (colors.isDark) Color.White.copy(alpha = 0.12f)
+    else Color.White.copy(alpha = 1.0f)
+    val activePill = if (colors.isDark) Color.White.copy(alpha = 0.12f)
+    else Color(0xFF0B1220).copy(alpha = 0.07f)
 
     val tabs = listOf(
         RcTab.HOME to "오늘",

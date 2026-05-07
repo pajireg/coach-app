@@ -51,14 +51,17 @@ enum class Zone {
     RECOVERY, BASE, THRESHOLD, INTERVAL, REST, LONG;
 }
 
-fun String.toZone(): Zone = when (this.lowercase()) {
-    "recovery" -> Zone.RECOVERY
-    "base" -> Zone.BASE
-    "threshold" -> Zone.THRESHOLD
-    "interval" -> Zone.INTERVAL
-    "rest" -> Zone.REST
-    "long" -> Zone.LONG
-    else -> Zone.REST
+fun String.toZone(): Zone {
+    val s = this.lowercase()
+    return when {
+        s.contains("recovery") -> Zone.RECOVERY
+        s.contains("base") || s.contains("easy") -> Zone.BASE
+        s.contains("threshold") || s.contains("tempo") -> Zone.THRESHOLD
+        s.contains("interval") || s.contains("speed") || s.contains("repeat") -> Zone.INTERVAL
+        s.contains("long") -> Zone.LONG
+        s.contains("rest") || s.contains("휴식") || s.contains("off") -> Zone.REST
+        else -> Zone.REST
+    }
 }
 
 fun Zone.label(): String = when (this) {

@@ -137,6 +137,12 @@ private fun WeekStrip(
             val accent = zoneColor(zone)
             val isToday = workout.date == today
             val isRest = workout.isRest
+            val dayLabel = try {
+                val d = LocalDate.parse(workout.date)
+                listOf("월", "화", "수", "목", "금", "토", "일")[d.dayOfWeek.value - 1]
+            } catch (_: Exception) {
+                dayLabels.getOrElse(index) { "" }
+            }
 
             Column(
                 modifier = Modifier
@@ -147,7 +153,7 @@ private fun WeekStrip(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(
-                    dayLabels.getOrElse(index) { "" },
+                    dayLabel,
                     style = RcTypography.labelSmall,
                     color = if (isToday) rcColors.text else rcColors.textMuted,
                 )

@@ -29,8 +29,8 @@ fun RcNavBar(
     actions: @Composable () -> Unit = {},
 ) {
     val colors = rcColors
-    val bgColor = if (colors.isDark) Color(0xFF14213C).copy(alpha = 0.88f)
-    else Color.White.copy(alpha = 0.88f)
+    val bgColor = if (colors.isDark) Color(0xFF0E1927).copy(alpha = 0.96f)
+    else Color(0xFFFEFDF9).copy(alpha = 0.97f)
 
     val alpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
